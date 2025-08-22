@@ -10,15 +10,19 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public Long id;
 
-    private String username;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<PortfolioAsset> portfolioAssets;
+    public String username;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserTransaction> transactions;
+    public List<PortfolioAsset> portfolioAssets;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    public List<UserTransaction> transactions;
+
+    public User(String username) {
+        this.username = username;
+    }
 
     // gettery/settery
 }
