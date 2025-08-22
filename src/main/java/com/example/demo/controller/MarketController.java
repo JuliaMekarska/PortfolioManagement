@@ -40,15 +40,5 @@ public class MarketController {
     }
 
     // Trigger a manual update for all assets (useful for testing)
-    @PostMapping("/update")
-    public ResponseEntity<String> triggerUpdate() {
-        new Thread(() -> {
-            try {
-                finnhubService.triggerUpdateNow();
-            } catch (Exception e) {
-                // log from service
-            }
-        }).start();
-        return ResponseEntity.accepted().body("Update started");
-    }
+
 }
