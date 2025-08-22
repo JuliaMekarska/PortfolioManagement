@@ -20,7 +20,7 @@ public class Asset {
     private List<PortfolioAsset> portfolioAssets;
 
     @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL)
-    private List<Transaction> transactions;
+    private List<UserTransaction> transactions;
 
     // gettery/settery
 }
