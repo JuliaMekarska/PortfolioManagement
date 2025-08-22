@@ -1,28 +1,39 @@
 package com.example.demo.entities;
 
 import jakarta.persistence.*;
-import jakarta.transaction.Transaction;
-
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
-@Table(name = "users") // "user" to reserved word w SQL
+@Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
 
-    public String username;
+    private String username;
+
+    private BigDecimal balance = BigDecimal.ZERO;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    public List<PortfolioAsset> portfolioAssets;
+    private List<UserTransaction> transactions;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    public List<UserTransaction> transactions;
+    private List<PortfolioAsset> portfolioAssets;
 
-    public User(String username) {
-        this.username = username;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    // gettery/settery
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public BigDecimal getBalance() { return balance; }
+    public void setBalance(BigDecimal balance) { this.balance = balance; }
+
+    public List<UserTransaction> getTransactions() { return transactions; }
+    public void setTransactions(List<UserTransaction> transactions) { this.transactions = transactions; }
+
+    public List<PortfolioAsset> getPortfolioAssets() { return portfolioAssets; }
+    public void setPortfolioAssets(List<PortfolioAsset> portfolioAssets) { this.portfolioAssets = portfolioAssets; }
 }
