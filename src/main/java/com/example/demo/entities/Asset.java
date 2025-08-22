@@ -154,4 +154,6 @@ public class Asset {
     public void setMarketType(MarketType marketType) {
         this.marketType = marketType;
     }
+
+
 }
