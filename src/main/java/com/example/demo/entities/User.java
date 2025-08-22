@@ -18,7 +18,7 @@ public class User {
     private List<PortfolioAsset> portfolioAssets;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Transaction> transactions;
+    private List<UserTransaction> transactions;
 
     // gettery/settery
 }
