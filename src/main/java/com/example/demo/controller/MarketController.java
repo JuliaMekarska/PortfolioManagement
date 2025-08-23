@@ -1,44 +1,50 @@
 package com.example.demo.controller;
 
 import com.example.demo.entities.Asset;
+import com.example.demo.entities.MarketType;
 import com.example.demo.repository.AssetRepository;
-import com.example.demo.service.FinnhubService;
-import org.springframework.http.ResponseEntity;
+import com.example.demo.repository.MarketTypeRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/assets")
+@RequestMapping("/api")
 public class MarketController {
 
-    private AssetRepository assetRepository;
-    private FinnhubService finnhubService;
+    private final AssetRepository assetRepository;
+    private final MarketTypeRepository marketTypeRepository;
 
-    public void AssetController(AssetRepository assetRepository, FinnhubService finnhubService) {
+    public MarketController(AssetRepository assetRepository, MarketTypeRepository marketTypeRepository) {
         this.assetRepository = assetRepository;
-        this.finnhubService = finnhubService;
+        this.marketTypeRepository = marketTypeRepository;
     }
 
-    public MarketController(AssetRepository assetRepository, FinnhubService finnhubService) {
-        this.assetRepository = assetRepository;
-        this.finnhubService = finnhubService;
+    // 1. Get all market types
+    @GetMapping("/market-types")
+    public List<MarketType> getAllMarketTypes() {
+        return marketTypeRepository.findAll();
     }
 
-    // Get all assets
-    @GetMapping
-    public ResponseEntity<List<Asset>> getAll() {
-        return ResponseEntity.ok(assetRepository.findAll());
+    // 2. Get all assets
+    @GetMapping("/assets")
+    public List<Asset> getAllAssets() {
+        return assetRepository.findAll();
     }
 
-    // Get asset by ticker
-    @GetMapping("/{ticker}")
-    public ResponseEntity<Asset> getByTicker(@PathVariable String ticker) {
-        Optional<Asset> opt = assetRepository.findByTicker(ticker);
-        return opt.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    // 3. Get assets by market type name
+    @GetMapping("/assets/market/{marketName}")
+    public List<Asset> getAssetsByMarket(@PathVariable String marketName) {
+        Optional<MarketType> marketType = marketTypeRepository.findByName(marketName.toUpperCase());
+        return marketType.map(assetRepository::findByMarketType)
+                .orElse(List.of());
     }
 
-    // Trigger a manual update for all assets (useful for testing)
-
+    // 4. Get asset by ticker
+    @GetMapping("/assets/{ticker}")
+    public Asset getAssetByTicker(@PathVariable String ticker) {
+        return assetRepository.findByTicker(ticker.toUpperCase())
+                .orElseThrow(() -> new RuntimeException("Asset not found: " + ticker));
+    }
 }
