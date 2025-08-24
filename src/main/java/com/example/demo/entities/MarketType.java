@@ -18,7 +18,8 @@ public class MarketType {
     @OneToMany(mappedBy = "marketType", cascade = CascadeType.ALL)
     private List<Asset> assets;
 
-    public MarketType(String stock) {
+    public MarketType(String name) {
+        this.name=name;
     }
 
     public MarketType() {
