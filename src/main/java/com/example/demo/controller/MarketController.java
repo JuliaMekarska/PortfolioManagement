@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.entities.Asset;
 import com.example.demo.entities.MarketType;
+import com.example.demo.exception.MarketNotFoundException;
+import com.example.demo.exception.SymbolNotFoundException;
 import com.example.demo.repository.AssetRepository;
 import com.example.demo.repository.MarketTypeRepository;
 import org.springframework.web.bind.annotation.*;
@@ -36,15 +38,17 @@ public class MarketController {
     // 3. Get assets by market type name
     @GetMapping("/assets/market/{marketName}")
     public List<Asset> getAssetsByMarket(@PathVariable String marketName) {
-        Optional<MarketType> marketType = marketTypeRepository.findByName(marketName.toUpperCase());
-        return marketType.map(assetRepository::findByMarketType)
-                .orElse(List.of());
+        MarketType market = marketTypeRepository.findByName(marketName)
+                .orElseThrow(() -> new MarketNotFoundException(marketName));
+
+        // Return all assets for this market
+        return assetRepository.findByMarketType(market);
     }
 
     // 4. Get asset by ticker
     @GetMapping("/assets/{ticker}")
     public Asset getAssetByTicker(@PathVariable String ticker) {
-        return assetRepository.findByTicker(ticker.toUpperCase())
-                .orElseThrow(() -> new RuntimeException("Asset not found: " + ticker));
+        return assetRepository.findByTicker(ticker)
+                .orElseThrow(() -> new SymbolNotFoundException(ticker));
     }
 }
