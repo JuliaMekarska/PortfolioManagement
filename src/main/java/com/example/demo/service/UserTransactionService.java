@@ -59,6 +59,7 @@ public class UserTransactionService {
             pa.setUser(user);
             pa.setAsset(asset);
             pa.setQuantity(amount);
+            pa.setPurchasePrice(price); // <-- ustawiamy cenę zakupu z transakcji
             user.addAsset(pa);
         } else if (type == TransactionType.SELL) {
             BigDecimal remaining = amount;
@@ -131,9 +132,8 @@ public class UserTransactionService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
 
-        // Usuwamy asset z portfela jeśli istnieje i dotyczy tej transakcji
         if (transaction.getType() == TransactionType.BUY) {
-            // Szukamy portfolioAsset odpowiadającego tej transakcji (po assetId i ilości)
+            // Usuwamy asset z portfela
             PortfolioAsset pa = user.getPortfolioAssets().stream()
                     .filter(p -> p.getAsset().getId().equals(transaction.getAsset().getId())
                             && p.getQuantity().compareTo(transaction.getAmount()) == 0)
@@ -144,7 +144,9 @@ public class UserTransactionService {
                 user.getPortfolioAssets().remove(pa);
             }
         } else if (transaction.getType() == TransactionType.SELL) {
-            // W przypadku SELL zazwyczaj portfel już nie ma assetu, nic do usunięcia
+            // Cofamy wpływ sprzedaży na balans
+            BigDecimal totalSellValue = transaction.getPrice().multiply(transaction.getAmount());
+            user.setBalance(user.getBalance().subtract(totalSellValue));
         }
 
         // Usuwamy transakcję
@@ -157,15 +159,21 @@ public class UserTransactionService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        BigDecimal totalPnL = BigDecimal.ZERO;
+        BigDecimal totalProfit = BigDecimal.ZERO;
 
-        for (UserTransaction t : user.getTransactions()) {
-            if (t.getType() == TransactionType.BUY) { // tylko BUY liczymy do PnL
-                BigDecimal pnl = t.getAsset().getClosePrice().subtract(t.getPrice())
-                        .multiply(t.getAmount());
-                totalPnL = totalPnL.add(pnl);
-            }
+        for (PortfolioAsset pa : user.getPortfolioAssets()) {
+            // Liczymy profit tylko dla konkretnego PortfolioAsset
+            BigDecimal assetProfit = pa.getAsset().getClosePrice()
+                    .subtract(pa.getPurchasePrice()) // zakładam, że dodamy purchasePrice do PortfolioAsset
+                    .multiply(pa.getQuantity());
+
+            pa.setProfitAsset(assetProfit.setScale(2, RoundingMode.HALF_UP));
+
+            totalProfit = totalProfit.add(assetProfit);
         }
 
-        return totalPnL.setScale(2, RoundingMode.HALF_UP);
-    }}
+        return totalProfit.setScale(2, RoundingMode.HALF_UP);
+    }
+
+
+}
