@@ -1,23 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Finance Chat</title>
+    <title>Finance Teacher Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 2rem auto; }
+        #chat { border: 1px solid #ccc; padding: 1rem; height: 400px; overflow-y: auto; }
+        .message { margin: 0.5rem 0; padding: 0.5rem; border-radius: 5px; }
+        .user { background-color: #e0f7fa; text-align: right; }
+        .assistant { background-color: #fff9c4; text-align: left; }
+        input { width: 80%; padding: 0.5rem; margin-top: 1rem; }
+        button { padding: 0.5rem 1rem; }
+    </style>
 </head>
 <body>
+
 <h1>Finance Teacher Chat</h1>
+
+<div id="chat"></div>
+
 <input type="text" id="question" placeholder="Type your question" />
 <button onclick="sendQuestion()">Ask</button>
-<div id="answer"></div>
 
 <script>
+    const chatDiv = document.getElementById("chat");
+
+    function addMessage(role, text) {
+        const div = document.createElement("div");
+        div.className = "message " + role;
+        div.textContent = text;
+        chatDiv.appendChild(div);
+        chatDiv.scrollTop = chatDiv.scrollHeight; // auto scroll
+    }
+
     async function sendQuestion() {
         const question = document.getElementById("question").value;
-        const resp = await fetch("/api/chat/question?question=" + encodeURIComponent(question), {
-            method: "POST"
-        });
-        const data = await resp.json();
-        document.getElementById("answer").innerText = "Answer: " + (data.answer || data.error);
+        if (!question) return;
+
+        // show user's question
+        addMessage("user", question);
+        document.getElementById("question").value = "";
+
+        try {
+            const resp = await fetch("/api/chat/question?question=" + encodeURIComponent(question), {
+                method: "POST"
+            });
+            const data = await resp.json();
+
+            // Clean the answer: use only content if object exists
+            let answer = data.answer;
+            if (answer && answer.content) answer = answer.content;
+
+            addMessage("assistant", answer || "No answer received");
+        } catch (err) {
+            addMessage("assistant", "Error: " + err.message);
+        }
     }
 </script>
+
 </body>
 </html>
