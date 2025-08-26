@@ -37,7 +37,7 @@ public class CSVDataLoaderService {
         try {
             marketTypeRepository.deleteAll();
             // Run Python script once to fetch data
-            File pythonFile = new File("src/main/python/output/fetch_data.py");
+            File pythonFile = new File("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/python/output/fetch_data.py");
             if (!pythonFile.exists()) {
                 System.err.println("Python script not found: " + pythonFile.getAbsolutePath());
             } else {
@@ -54,10 +54,10 @@ public class CSVDataLoaderService {
             commodityType = ensureType("COMMODITY");
 
             // Load CSVs into H2
-            loadCsvToDatabase("src/main/resources/data/stocks_data.csv", stockType);
-            loadCsvToDatabase("src/main/resources/data/crypto_data.csv", cryptoType);
-            loadCsvToDatabase("src/main/resources/data/etf_data.csv", etfType);
-            loadCsvToDatabase("src/main/resources/data/commodities_data.csv", commodityType);
+            loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/stocks_data.csv", stockType);
+            loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/crypto_data.csv", cryptoType);
+            loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/etf_data.csv", etfType);
+            loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/commodities_data.csv", commodityType);
 
         } catch (IOException | InterruptedException | CsvValidationException e) {
             System.err.println("Error running Python script or loading CSVs: " + e.getMessage());

@@ -4,10 +4,10 @@ import csv
 
 # Define input and output files for each category
 categories = {
-    "stocks": "src/main/resources/data/stocks.csv",
-    "crypto": "src/main/resources/data/crypto.csv",
-    "etf": "src/main/resources/data/etf.csv",
-    "commodities": "src/main/resources/data/commodities.csv"
+    "stocks": "C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/stocks.csv",
+    "crypto": "C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/crypto.csv",
+    "etf": "C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/etf.csv",
+    "commodities": "C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/commodities.csv"
 }
 
 for category, in_file in categories.items():
@@ -45,6 +45,6 @@ for category, in_file in categories.items():
     # Reorder columns for consistency: Date, Open, High, Low, Close, Volume, PreviousClose, CompanyName, Symbol
     df = df[['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'PreviousClose', 'CompanyName', 'Symbol']]
 
-    out_file = f"src/main/resources/data/{category}_data.csv"
+    out_file = f"C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/{category}_data.csv"
     df.to_csv(out_file, index=False, quoting=csv.QUOTE_ALL)
     print(f"Wrote {len(df)} rows to {out_file}")
