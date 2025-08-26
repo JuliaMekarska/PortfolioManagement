@@ -1,114 +1,63 @@
 package com.example.demo.controller;
 
-import com.example.demo.entities.Asset;
-import com.example.demo.entities.PortfolioAsset;
-import com.example.demo.entities.User;
 import com.example.demo.entities.UserTransaction;
 import com.example.demo.entities.TransactionType;
-import com.example.demo.repository.AssetRepository;
-import com.example.demo.repository.PortfolioAssetRepository;
-import com.example.demo.repository.UserRepository;
-import com.example.demo.repository.UserTransactionRepository;
+import com.example.demo.service.UserTransactionService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/transactions")
 public class UserTransactionController {
 
-    private final UserTransactionRepository transactionRepository;
-    private final UserRepository userRepository;
-    private final AssetRepository assetRepository;
-    private final PortfolioAssetRepository portfolioAssetRepository;
+    private final UserTransactionService transactionService;
 
-    public UserTransactionController(UserTransactionRepository transactionRepository,
-                                     UserRepository userRepository,
-                                     AssetRepository assetRepository,
-                                     PortfolioAssetRepository portfolioAssetRepository) {
-        this.transactionRepository = transactionRepository;
-        this.userRepository = userRepository;
-        this.assetRepository = assetRepository;
-        this.portfolioAssetRepository = portfolioAssetRepository;
+    public UserTransactionController(UserTransactionService transactionService) {
+        this.transactionService = transactionService;
+    }
+
+    @GetMapping("/ping")
+    public String ping() {
+        return "Controller works!";
     }
 
     @PostMapping("/buy")
-    public UserTransaction buyAsset(@RequestParam Long userId,
-                                    @RequestParam Long assetId,
-                                    @RequestParam BigDecimal amount,
-                                    @RequestParam BigDecimal price) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Asset asset = assetRepository.findById(assetId)
-                .orElseThrow(() -> new RuntimeException("Asset not found"));
-
-        UserTransaction transaction = new UserTransaction();
-        transaction.setUser(user);
-        transaction.setAsset(asset);
-        transaction.setType(TransactionType.BUY);
-        transaction.setAmount(amount);
-        transaction.setPrice(price);
-        transactionRepository.save(transaction);
-
-        PortfolioAsset portfolioAsset = portfolioAssetRepository.findByUser_Id(userId).stream()
-                .filter(pa -> pa.getAsset().getId().equals(assetId))
-                .findFirst()
-                .orElseGet(() -> {
-                    PortfolioAsset pa = new PortfolioAsset();
-                    pa.setUser(user);
-                    pa.setAsset(asset);
-                    pa.setQuantity(BigDecimal.ZERO);
-                    return pa;
-                });
-
-        portfolioAsset.setQuantity(portfolioAsset.getQuantity().add(amount));
-        portfolioAssetRepository.save(portfolioAsset);
-
-        return transaction;
+    public UserTransaction buyTransaction(@RequestParam Long userId,
+                                          @RequestParam String ticker,
+                                          @RequestParam BigDecimal amount,
+                                          @RequestParam BigDecimal price) {
+        // Kupno zawsze po tickerze, assetId = null
+        return transactionService.addTransaction(userId, ticker, amount, price, TransactionType.BUY, null);
     }
 
     @PostMapping("/sell")
-    public UserTransaction sellAsset(@RequestParam Long userId,
-                                     @RequestParam Long assetId,
-                                     @RequestParam BigDecimal amount,
-                                     @RequestParam BigDecimal price) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Asset asset = assetRepository.findById(assetId)
-                .orElseThrow(() -> new RuntimeException("Asset not found"));
-
-        PortfolioAsset portfolioAsset = portfolioAssetRepository.findByUser_Id(userId).stream()
-                .filter(pa -> pa.getAsset().getId().equals(assetId))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Not enough assets to sell"));
-
-        if (portfolioAsset.getQuantity().compareTo(amount) < 0) {
-            throw new RuntimeException("Not enough assets to sell");
-        }
-
-        UserTransaction transaction = new UserTransaction();
-        transaction.setUser(user);
-        transaction.setAsset(asset);
-        transaction.setType(TransactionType.SELL);
-        transaction.setAmount(amount);
-        transaction.setPrice(price);
-        transactionRepository.save(transaction);
-
-        portfolioAsset.setQuantity(portfolioAsset.getQuantity().subtract(amount));
-        if (portfolioAsset.getQuantity().compareTo(BigDecimal.ZERO) == 0) {
-            portfolioAssetRepository.delete(portfolioAsset);
-        } else {
-            portfolioAssetRepository.save(portfolioAsset);
-        }
-
-        return transaction;
+    public UserTransaction sellTransaction(@RequestParam Long userId,
+                                           @RequestParam Long assetId,
+                                           @RequestParam BigDecimal amount,
+                                           @RequestParam BigDecimal price) {
+        // Sprzedaż po assetId
+        return transactionService.addTransaction(userId, null, amount, price, TransactionType.SELL, assetId);
     }
 
-    @GetMapping("/history")
-    public List<UserTransaction> getTransactionHistory(@RequestParam Long userId) {
-        return transactionRepository.findByUser_Id(userId);
+    @PutMapping("/{transactionId}/edit")
+    public UserTransaction editTransaction(
+            @RequestParam Long userId,
+            @PathVariable Long transactionId,
+            @RequestParam(required = false) BigDecimal amount,
+            @RequestParam(required = false) BigDecimal price,
+            @RequestParam(required = false) TransactionType type
+    ) {
+        return transactionService.updateTransaction(userId, transactionId, amount, price, type);
+    }
+
+    @DeleteMapping("/{transactionId}")
+    public ResponseEntity<String> deleteTransaction(
+            @RequestParam Long userId,
+            @PathVariable Long transactionId) {
+
+        transactionService.deleteTransaction(userId, transactionId);
+        return ResponseEntity.ok("Transaction deleted successfully");
     }
 }

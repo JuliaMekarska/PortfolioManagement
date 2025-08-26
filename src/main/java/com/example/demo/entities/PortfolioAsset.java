@@ -1,5 +1,6 @@
 package com.example.demo.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
@@ -14,6 +15,7 @@ public class PortfolioAsset {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference("asset")
     private User user;
 
     @ManyToOne
