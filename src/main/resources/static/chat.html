@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Finance Chat</title>
+</head>
+<body>
+<h1>Finance Teacher Chat</h1>
+<input type="text" id="question" placeholder="Type your question" />
+<button onclick="sendQuestion()">Ask</button>
+<div id="answer"></div>
+
+<script>
+    async function sendQuestion() {
+        const question = document.getElementById("question").value;
+        const resp = await fetch("/api/chat/question?question=" + encodeURIComponent(question), {
+            method: "POST"
+        });
+        const data = await resp.json();
+        document.getElementById("answer").innerText = "Answer: " + (data.answer || data.error);
+    }
+</script>
+</body>
+</html>
