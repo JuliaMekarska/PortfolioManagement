@@ -2,15 +2,7 @@
 <html>
 <head>
     <title>Finance Teacher Chat</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 2rem auto; }
-        #chat { border: 1px solid #ccc; padding: 1rem; height: 400px; overflow-y: auto; }
-        .message { margin: 0.5rem 0; padding: 0.5rem; border-radius: 5px; }
-        .user { background-color: #e0f7fa; text-align: right; }
-        .assistant { background-color: #fff9c4; text-align: left; }
-        input { width: 80%; padding: 0.5rem; margin-top: 1rem; }
-        button { padding: 0.5rem 1rem; }
-    </style>
+    <link rel="stylesheet" href="chat_style.css">
 </head>
 <body>
 
@@ -33,28 +25,29 @@
     }
 
     async function sendQuestion() {
-        const question = document.getElementById("question").value;
-        if (!question) return;
+    const question = document.getElementById("question").value;
+    if (!question) return;
 
-        // show user's question
-        addMessage("user", question);
-        document.getElementById("question").value = "";
+    addMessage("user", question);
+    document.getElementById("question").value = "";
 
-        try {
-            const resp = await fetch("/api/chat/question?question=" + encodeURIComponent(question), {
-                method: "POST"
-            });
-            const data = await resp.json();
+    try {
+        const resp = await fetch("/api/chat/question?question=" + encodeURIComponent(question), {
+            method: "POST"
+        });
+        const data = await resp.json();
 
-            // Clean the answer: use only content if object exists
-            let answer = data.answer;
-            if (answer && answer.content) answer = answer.content;
+        // extract only content
+        let answer = data.answer;
+        const match = answer.match(/content='([\s\S]*?)'/);
+        if (match) answer = match[1];
 
-            addMessage("assistant", answer || "No answer received");
-        } catch (err) {
-            addMessage("assistant", "Error: " + err.message);
-        }
+        addMessage("assistant", answer || "No answer received");
+    } catch (err) {
+        addMessage("assistant", "Error: " + err.message);
     }
+}
+
 </script>
 
 </body>
