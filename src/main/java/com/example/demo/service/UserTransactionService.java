@@ -90,58 +90,35 @@ public class UserTransactionService {
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
 
+        TransactionType oldType = transaction.getType();
+        BigDecimal oldAmount = transaction.getAmount();
+        BigDecimal oldPrice = transaction.getPrice();
+        Asset asset = transaction.getAsset();
+
         // aktualizujemy dane transakcji
         if (newAmount != null) transaction.setAmount(newAmount);
         if (newPrice != null) transaction.setPrice(newPrice);
         if (newType != null) transaction.setType(newType);
 
-        // przeliczamy portfel po zmianie transakcji
-        recalculatePortfolio(user);
+        // Jeśli typ transakcji zmienił się z BUY → SELL
+        if (oldType == TransactionType.BUY && transaction.getType() == TransactionType.SELL) {
+            // Znajdujemy odpowiadający portfolioAsset dla tej transakcji
+            PortfolioAsset pa = user.getPortfolioAssets().stream()
+                    .filter(p -> p.getAsset().getId().equals(asset.getId()) && p.getQuantity().compareTo(oldAmount) == 0)
+                    .findFirst()
+                    .orElse(null);
+
+            if (pa != null) {
+                user.getPortfolioAssets().remove(pa);
+            }
+
+            // Dodajemy balance
+            user.setBalance(user.getBalance().add(transaction.getAmount().multiply(transaction.getPrice())));
+        }
+        // Jeśli BUY → BUY lub SELL → SELL lub SELL → BUY – możesz rozbudować logikę w podobny sposób
 
         userRepository.save(user);
         return transaction;
-    }
-
-    /**
-     * Przelicza portfel użytkownika na podstawie wszystkich transakcji (każdy zakup = nowy asset)
-     */
-    private void recalculatePortfolio(User user) {
-        user.getPortfolioAssets().clear();
-
-        for (UserTransaction t : user.getTransactions()) {
-            if (t.getType() == TransactionType.BUY) {
-                PortfolioAsset pa = new PortfolioAsset();
-                pa.setUser(user);
-                pa.setAsset(t.getAsset());
-                pa.setQuantity(t.getAmount());
-                user.addAsset(pa);
-            } else if (t.getType() == TransactionType.SELL) {
-                BigDecimal remaining = t.getAmount();
-
-                // Pobieramy wszystkie portfolioAsset dla danego tickera
-                List<PortfolioAsset> assets = user.getPortfolioAssets().stream()
-                        .filter(pa -> pa.getAsset().getTicker().equals(t.getAsset().getTicker()))
-                        .toList();
-
-                for (PortfolioAsset pa : assets) {
-                    if (remaining.compareTo(BigDecimal.ZERO) <= 0) break;
-
-                    BigDecimal qty = pa.getQuantity();
-                    if (qty.compareTo(remaining) <= 0) {
-                        // Odejmujemy całość i oznaczamy do usunięcia
-                        remaining = remaining.subtract(qty);
-                        pa.setQuantity(BigDecimal.ZERO);
-                    } else {
-                        // Odejmujemy tylko część
-                        pa.setQuantity(qty.subtract(remaining));
-                        remaining = BigDecimal.ZERO;
-                    }
-                }
-
-                // Usuwamy wszystkie assety z quantity == 0
-                user.getPortfolioAssets().removeIf(pa -> pa.getQuantity().compareTo(BigDecimal.ZERO) == 0);
-            }
-        }
     }
 
     public void deleteTransaction(Long userId, Long transactionId) {
