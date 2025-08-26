@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Finance Teacher Chat</title>
+    <link rel="stylesheet" href="chat_style.css">
+</head>
+<body>
+
+<h1>Finance Teacher Chat</h1>
+
+<div id="chat"></div>
+
+<input type="text" id="question" placeholder="Type your question" />
+<button onclick="sendQuestion()">Ask</button>
+
+<script>
+    const chatDiv = document.getElementById("chat");
+
+    function addMessage(role, text) {
+        const div = document.createElement("div");
+        div.className = "message " + role;
+        div.textContent = text;
+        chatDiv.appendChild(div);
+        chatDiv.scrollTop = chatDiv.scrollHeight; // auto scroll
+    }
+
+    async function sendQuestion() {
+    const question = document.getElementById("question").value;
+    if (!question) return;
+
+    addMessage("user", question);
+    document.getElementById("question").value = "";
+
+    try {
+        const resp = await fetch("/api/chat/question?question=" + encodeURIComponent(question), {
+            method: "POST"
+        });
+        const data = await resp.json();
+
+        // extract only content
+        let answer = data.answer;
+        const match = answer.match(/content='([\s\S]*?)'/);
+        if (match) answer = match[1];
+
+        addMessage("assistant", answer || "No answer received");
+    } catch (err) {
+        addMessage("assistant", "Error: " + err.message);
+    }
+}
+
+</script>
+
+</body>
+</html>
