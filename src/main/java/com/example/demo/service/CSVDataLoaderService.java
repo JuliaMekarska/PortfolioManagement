@@ -51,6 +51,17 @@ public class CSVDataLoaderService {
                 Process process = pb.start();
                 process.waitFor(); // wait until CSVs are written
             }
+            /*File pythonFile1 = new File("src/main/python/output/historic_data.py");
+            if (!pythonFile.exists()) {
+                System.err.println("Python script not found: " + pythonFile1.getAbsolutePath());
+            } else {
+                ProcessBuilder pb = new ProcessBuilder("python", pythonFile1.getAbsolutePath());
+                pb.inheritIO();
+                Process process = pb.start();
+                process.waitFor(); // wait until CSVs are written
+            }
+
+             */
 
             // Initialize MarketTypes
             stockType = ensureType("STOCK");
