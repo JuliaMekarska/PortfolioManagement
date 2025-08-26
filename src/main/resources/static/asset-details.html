@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Portfolio Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border-bottom: 1px solid #ccc;
+        }
+        header .header-left button {
+            margin-right: 10px;
+            padding: 6px 12px;
+        }
+        header .account-status {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-left">
+        <h1>Q2 Portfolio</h1>
+        <button onclick="window.location.href='index.html'">Home</button>
+        <button onclick="window.location.href='profile.html'">Profile</button>
+    </div>
+    <div class="account-status">
+        Balance: $8,000
+    </div>
+</header>
+
+<main>
+    <div id="detailsContainer">
+        <!-- Lista atrybutów -->
+        <div id="attributes"></div>
+
+        <!-- Wykres pod listą -->
+        <canvas id="assetChart" width="400" height="200"></canvas>
+    </div>
+
+    <div style="margin-top:20px;">
+        <button id="addAsset">Add</button>
+        <button id="removeAsset">Remove</button>
+    </div>
+</main>
+
+<script src="script-details.js"></script>
+</body>
+</html>
+

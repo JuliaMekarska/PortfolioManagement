@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Portfolio Manager – Profile</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Minimalny styling tylko dla układu zakładek */
+        nav {
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 10px 20px; background: #f0f0f0; border-bottom: 1px solid #ccc;
+        }
+        nav .menu-buttons button { margin-right: 10px; padding: 6px 12px; }
+        nav .account-status { font-weight: bold; }
+        .summary {
+          display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+          gap: 12px; margin: 16px 20px;
+        }
+        .summary .card {
+          background: #fff; border: 1px solid #eee; border-radius: 8px;
+          padding: 12px;
+        }
+        .tabs { display: flex; gap: 8px; padding: 0 20px; margin-top: 8px; }
+        .tabs button { padding: 6px 12px; }
+        .tab-panel { display: none; padding: 16px 20px; }
+        .tab-panel.active { display: block; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border-bottom: 1px solid #eee; padding: 8px; text-align: left; }
+        #plChart { max-width: 520px; }
+    </style>
+</head>
+<body>
+
+<!-- Górna nawigacja: Home, Profile, saldo -->
+<nav>
+    <div class="menu-buttons">
+        <button onclick="window.location.href='index.html'">Home</button>
+        <button onclick="window.location.href='profile.html'">Profile</button>
+    </div>
+    <div class="account-status">
+        Balance: <span id="balanceDisplay">—</span>
+    </div>
+</nav>
+
+<header>
+    <h1 style="padding: 10px 20px; margin: 0;">Your Profile</h1>
+</header>
+
+<!-- Karty/metryki -->
+<section class="summary">
+    <div class="card">
+        <h3 style="margin:0 0 6px;">Balance</h3>
+        <div id="balanceValue">—</div>
+    </div>
+    <div class="card">
+        <h3 style="margin:0 0 6px;">Profit</h3>
+        <div id="profitValue">—</div>
+        <div id="profitPct" style="color:#2e7d32;">—</div>
+    </div>
+    <div class="card">
+        <h3 style="margin:0 0 6px;">Loss</h3>
+        <div id="lossValue">—</div>
+        <div id="lossPct" style="color:#c62828;">—</div>
+    </div>
+    <div class="card">
+        <h3 style="margin:0 0 6px;">P/L Chart</h3>
+        <canvas id="plChart" height="140"></canvas>
+    </div>
+</section>
+
+<!-- Zakładki -->
+<div class="tabs">
+    <button id="tabPortfolioBtn" class="tab-btn" data-tab="portfolio">My Portfolio</button>
+    <button id="tabTxBtn" class="tab-btn" data-tab="transactions">Transactions</button>
+</div>
+
+<!-- Panel: Portfel -->
+<section id="tab-portfolio" class="tab-panel active">
+    <table>
+        <thead>
+        <tr>
+            <th>Ticker</th>
+            <th>Name</th>
+            <th>Close</th>
+            <th>% Change</th>
+            <th>Volume</th>
+            <th>Market</th>
+        </tr>
+        </thead>
+        <tbody id="portfolioBody"></tbody>
+    </table>
+</section>
+
+<!-- Panel: Transakcje -->
+<section id="tab-transactions" class="tab-panel">
+    <table>
+        <thead>
+        <tr>
+            <th>Time</th>
+            <th>Action</th>
+            <th>Ticker</th>
+            <th>Name</th>
+            <th>Qty</th>
+            <th>Price</th>
+        </tr>
+        </thead>
+        <tbody id="transactionsBody"></tbody>
+    </table>
+</section>
+
+<script src="profile.js"></script>
+</body>
+</html>

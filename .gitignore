@@ -4,6 +4,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### bazy danych ###
+data/marketdb.mv.db
+data/marketdb.lock.db
+
 ### STS ###
 .apt_generated
 .classpath

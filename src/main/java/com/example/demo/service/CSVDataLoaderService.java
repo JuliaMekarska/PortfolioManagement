@@ -41,7 +41,7 @@ public class CSVDataLoaderService {
             if (!pythonFile.exists()) {
                 System.err.println("Python script not found: " + pythonFile.getAbsolutePath());
             } else {
-                ProcessBuilder pb = new ProcessBuilder("python3", pythonFile.getAbsolutePath());
+                ProcessBuilder pb = new ProcessBuilder("python", pythonFile.getAbsolutePath());
                 pb.inheritIO();
                 Process process = pb.start();
                 process.waitFor(); // wait until CSVs are written
