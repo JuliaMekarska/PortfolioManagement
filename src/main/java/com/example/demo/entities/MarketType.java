@@ -13,7 +13,7 @@ public class MarketType {
 
 
 
-    private String name; // np. Crypto, Stock
+    private String name;
 
     @OneToMany(mappedBy = "marketType", cascade = CascadeType.ALL)
     private List<Asset> assets;
@@ -40,5 +40,4 @@ public class MarketType {
     public void setName(String name) {
         this.name = name;
     }
-    // gettery/settery
 }

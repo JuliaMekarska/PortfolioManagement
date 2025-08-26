@@ -1,0 +1,351 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e6f0ff;
+    color: #2d2d2d;
+    line-height: 1.6;
+}
+
+header {
+    background: linear-gradient(90deg, #4b6cb7, #182848);
+    color: #fff;
+    padding: 25px 0;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+}
+
+nav a {
+    color: #ffe6f0;
+    margin: 0 18px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: color 0.3s, transform 0.2s;
+}
+
+nav a:hover {
+    color: #00cccc;
+    transform: scale(1.05);
+}
+
+main {
+    max-width: 1200px;
+    margin: 35px auto;
+    padding: 0 25px;
+}
+
+.filter {
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.filter select {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #b4b4b4;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.filter select:focus {
+    outline: none;
+    border-color: #663399;
+    box-shadow: 0 0 5px rgba(102,51,153,0.5);
+}
+
+.assets-grid, #portfolioAssets, #portfolioTransactions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    justify-content: center;
+}
+
+.asset-card, .transaction {
+    background: #fff;
+    padding: 22px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    min-width: 230px;
+    max-width: 320px;
+    text-align: center;
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.asset-card:hover, .transaction:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.asset-card h3, .transaction h3 {
+    margin-bottom: 12px;
+    color: #663399;
+    font-size: 1.3rem;
+}
+
+.asset-card p, .transaction p {
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+button {
+    cursor: pointer;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s;
+    margin-top: 6px;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.detailsBtn {
+    background-color: #0099ff;
+    color: #fff;
+}
+
+.addBtn, #buyButton, .confirmAdd, .confirmEdit, .sellBtn {
+    background-color: #00cc99;
+    color: #fff;
+}
+
+.deleteTx {
+    background-color: #ff6666;
+    color: #fff;
+}
+
+.editTx {
+    background-color: #ff9933;
+    color: #fff;
+}
+
+.addForm, #editForm {
+    background-color: #f5f5ff;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 12px;
+    text-align: left;
+}
+
+.addForm label, #editForm label {
+    display: block;
+    margin-top: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.addForm input, #editForm input {
+    width: 100%;
+    padding: 7px;
+    border-radius: 8px;
+    border: 1px solid #b4b4b4;
+    margin-top: 4px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.addForm input:focus, #editForm input:focus {
+    outline: none;
+    border-color: #663399;
+    box-shadow: 0 0 5px rgba(102,51,153,0.4);
+}
+
+#buyMessage, .msg, #editMsg, .sellMsg {
+    margin-top: 6px;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 28px;
+    border-radius: 14px;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+}
+
+@media (max-width: 768px) {
+    .assets-grid, #portfolioAssets, #portfolioTransactions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .asset-card, .transaction {
+        width: 92%;
+    }
+}
+
+#greeting {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 60px 20px;
+}
+
+#greeting h2 {
+    font-size: 2rem;
+    color: #182848;
+    margin-bottom: 20px;
+}
+
+#greeting p {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 25px;
+}
+
+#greeting .btn {
+    display: inline-block;
+    background: #00cc99;
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    margin: 5px;
+    transition: all 0.3s;
+}
+
+#greeting .btn:hover {
+    background: #009977;
+    transform: translateY(-2px);
+}
+
+#greeting .photo {
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+}
+
+body.chat {
+    background-color: #e6f0ff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2d2d2d;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+body.chat h1 {
+    font-size: 2rem;
+    color: #182848;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+#chat {
+    width: 100%;
+    max-width: 700px;
+    height: 450px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.message {
+    padding: 12px 16px;
+    border-radius: 12px;
+    max-width: 80%;
+    word-wrap: break-word;
+    font-size: 1rem;
+    line-height: 1.4;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    transition: background 0.3s;
+}
+
+.message.user {
+    align-self: flex-end;
+    background-color: #00cc99;
+    color: #fff;
+}
+
+.message.assistant {
+    align-self: flex-start;
+    background-color: #f5f5ff;
+    color: #182848;
+}
+
+#question {
+    width: 100%;
+    max-width: 600px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid #b4b4b4;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+#question:focus {
+    border-color: #4b6cb7;
+    box-shadow: 0 0 8px rgba(75,108,183,0.4);
+}
+
+button {
+    padding: 12px 25px;
+    border-radius: 10px;
+    border: none;
+    background-color: #4b6cb7;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+button:hover {
+    background-color: #3a539b;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    #chat {
+        height: 350px;
+    }
+
+    #question, button {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 10px;
+    }
+}
+

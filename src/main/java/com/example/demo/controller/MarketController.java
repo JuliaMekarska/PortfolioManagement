@@ -23,29 +23,24 @@ public class MarketController {
         this.marketTypeRepository = marketTypeRepository;
     }
 
-    // 1. Get all market types
     @GetMapping("/market-types")
     public List<MarketType> getAllMarketTypes() {
         return marketTypeRepository.findAll();
     }
 
-    // 2. Get all assets
     @GetMapping("/assets")
     public List<Asset> getAllAssets() {
         return assetRepository.findAll();
     }
 
-    // 3. Get assets by market type name
     @GetMapping("/assets/market/{marketName}")
     public List<Asset> getAssetsByMarket(@PathVariable String marketName) {
         MarketType market = marketTypeRepository.findByName(marketName)
                 .orElseThrow(() -> new MarketNotFoundException(marketName));
 
-        // Return all assets for this market
         return assetRepository.findByMarketType(market);
     }
 
-    // 4. Get asset by ticker
     @GetMapping("/assets/{ticker}")
     public Asset getAssetByTicker(@PathVariable String ticker) {
         return assetRepository.findByTicker(ticker)

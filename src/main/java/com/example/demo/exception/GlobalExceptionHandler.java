@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleMarketTypeNotFound(MarketNotFoundException ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ex.getMessage()); // message will be shown in browser or API response
+                .body(ex.getMessage());
     }
 
     @ExceptionHandler(SymbolNotFoundException.class)

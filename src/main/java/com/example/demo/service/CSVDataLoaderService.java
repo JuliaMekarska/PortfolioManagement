@@ -41,28 +41,25 @@ public class CSVDataLoaderService {
     public void init() {
         try {
 
-            // Run Python script once to fetch data
-            File pythonFile = new File("src/main/python/output/fetch_data.py");
+            File pythonFile = new File("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/python/output/fetch_data.py");
             if (!pythonFile.exists()) {
                 System.err.println("Python script not found: " + pythonFile.getAbsolutePath());
             } else {
                 ProcessBuilder pb = new ProcessBuilder("python", pythonFile.getAbsolutePath());
                 pb.inheritIO();
                 Process process = pb.start();
-                process.waitFor(); // wait until CSVs are written
+                process.waitFor();
             }
 
-            // Initialize MarketTypes
             stockType = ensureType("STOCK");
             cryptoType = ensureType("CRYPTO");
             etfType = ensureType("ETF");
             commodityType = ensureType("COMMODITY");
 
-            // Load CSVs into H2
-            loadCsvToDatabase("src/main/resources/data/stocks_data.csv", stockType);
-            loadCsvToDatabase("src/main/resources/data/crypto_data.csv", cryptoType);
-            loadCsvToDatabase("src/main/resources/data/etf_data.csv", etfType);
-            loadCsvToDatabase("src/main/resources/data/commodities_data.csv", commodityType);
+            loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/stocks_data.csv", stockType);
+            loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/crypto_data.csv", cryptoType);
+            loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/etf_data.csv", etfType);
+            loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/commodities_data.csv", commodityType);
 
         } catch (IOException | InterruptedException | CsvValidationException e) {
             System.err.println("Error running Python script or loading CSVs: " + e.getMessage());
@@ -84,13 +81,13 @@ public class CSVDataLoaderService {
         }
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String header = br.readLine(); // skip CSV header
+            String header = br.readLine();
             String line;
             while ((line = br.readLine()) != null) {
-                // Split safely (respecting quotes)
+
                 String[] fields = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
 
-                if (fields.length < 9) continue; // skip malformed rows
+                if (fields.length < 9) continue;
 
                 String date = fields[0].replace("\"", "").trim();
                 String open = fields[1].replace("\"", "").trim();

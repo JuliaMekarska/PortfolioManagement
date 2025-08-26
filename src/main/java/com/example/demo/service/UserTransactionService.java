@@ -59,14 +59,13 @@ public class UserTransactionService {
             pa.setUser(user);
             pa.setAsset(asset);
             pa.setQuantity(amount);
-            pa.setPurchasePrice(price); // <-- ustawiamy cenę zakupu z transakcji
+            pa.setPurchasePrice(price);
             user.addAsset(pa);
         } else if (type == TransactionType.SELL) {
             BigDecimal remaining = amount;
 
             if (portfolioAsset.getQuantity().compareTo(remaining) <= 0) {
                 remaining = remaining.subtract(portfolioAsset.getQuantity());
-                // Dodajemy do balance wartość sprzedanych akcji
                 user.setBalance(user.getBalance().add(portfolioAsset.getQuantity().multiply(price)));
                 user.getPortfolioAssets().remove(portfolioAsset);
             } else {
@@ -96,14 +95,11 @@ public class UserTransactionService {
         BigDecimal oldPrice = transaction.getPrice();
         Asset asset = transaction.getAsset();
 
-        // aktualizujemy dane transakcji
         if (newAmount != null) transaction.setAmount(newAmount);
         if (newPrice != null) transaction.setPrice(newPrice);
         if (newType != null) transaction.setType(newType);
 
-        // Jeśli typ transakcji zmienił się z BUY → SELL
         if (oldType == TransactionType.BUY && transaction.getType() == TransactionType.SELL) {
-            // Znajdujemy odpowiadający portfolioAsset dla tej transakcji
             PortfolioAsset pa = user.getPortfolioAssets().stream()
                     .filter(p -> p.getAsset().getId().equals(asset.getId()) && p.getQuantity().compareTo(oldAmount) == 0)
                     .findFirst()
@@ -113,10 +109,8 @@ public class UserTransactionService {
                 user.getPortfolioAssets().remove(pa);
             }
 
-            // Dodajemy balance
             user.setBalance(user.getBalance().add(transaction.getAmount().multiply(transaction.getPrice())));
         }
-        // Jeśli BUY → BUY lub SELL → SELL lub SELL → BUY – możesz rozbudować logikę w podobny sposób
 
         userRepository.save(user);
         return transaction;
@@ -133,7 +127,6 @@ public class UserTransactionService {
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
 
         if (transaction.getType() == TransactionType.BUY) {
-            // Usuwamy asset z portfela
             PortfolioAsset pa = user.getPortfolioAssets().stream()
                     .filter(p -> p.getAsset().getId().equals(transaction.getAsset().getId())
                             && p.getQuantity().compareTo(transaction.getAmount()) == 0)
@@ -144,12 +137,10 @@ public class UserTransactionService {
                 user.getPortfolioAssets().remove(pa);
             }
         } else if (transaction.getType() == TransactionType.SELL) {
-            // Cofamy wpływ sprzedaży na balans
             BigDecimal totalSellValue = transaction.getPrice().multiply(transaction.getAmount());
             user.setBalance(user.getBalance().subtract(totalSellValue));
         }
 
-        // Usuwamy transakcję
         user.getTransactions().remove(transaction);
 
         userRepository.save(user);
@@ -162,9 +153,8 @@ public class UserTransactionService {
         BigDecimal totalProfit = BigDecimal.ZERO;
 
         for (PortfolioAsset pa : user.getPortfolioAssets()) {
-            // Liczymy profit tylko dla konkretnego PortfolioAsset
             BigDecimal assetProfit = pa.getAsset().getClosePrice()
-                    .subtract(pa.getPurchasePrice()) // zakładam, że dodamy purchasePrice do PortfolioAsset
+                    .subtract(pa.getPurchasePrice())
                     .multiply(pa.getQuantity());
 
             pa.setProfitAsset(assetProfit.setScale(2, RoundingMode.HALF_UP));

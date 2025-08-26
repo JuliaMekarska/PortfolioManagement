@@ -50,7 +50,7 @@ class UserTransactionServiceTest {
         UserTransaction tx = transactionService.addTransaction(
                 1L, "AAPL", BigDecimal.ONE, new BigDecimal("150"), TransactionType.BUY, null);
 
-        tx.setId(nextId()); // symulacja ID z bazy
+        tx.setId(nextId());
 
         assertEquals(1, user.getTransactions().size());
         assertEquals(1, user.getPortfolioAssets().size());

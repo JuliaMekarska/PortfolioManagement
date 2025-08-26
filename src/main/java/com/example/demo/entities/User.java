@@ -22,7 +22,7 @@ public class User {
     private BigDecimal balance = BigDecimal.ZERO;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "user_id") // foreign key w UserTransaction
+    @JoinColumn(name = "user_id")
     private List<UserTransaction> transactions = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

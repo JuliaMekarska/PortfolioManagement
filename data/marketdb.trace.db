@@ -1,3 +1,0 @@
-2025-08-25 09:58:45.059476Z jdbc[19]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "E" not found; SQL statement:
-SELECT * FROM E MARKET_TYPE [42102-232]

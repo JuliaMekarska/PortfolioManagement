@@ -17,8 +17,8 @@ public class Asset {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;   // full company name, e.g. Apple Inc
-    private String ticker; // AAPL, BTC/USD, SPY
+    private String name;
+    private String ticker;
     private String exchange;
     private BigDecimal openPrice;
     private BigDecimal highPrice;
@@ -42,7 +42,6 @@ public class Asset {
     @OneToMany(mappedBy = "asset", cascade = CascadeType.ALL)
     private List<UserTransaction> transactions;
 
-    // Getters and setters
     public Instant getLastUpdated() { return lastUpdated; }
     public void setLastUpdated(Instant lastUpdated) { this.lastUpdated = lastUpdated; }
 

@@ -42,7 +42,6 @@ public class CSVDataLoaderServiceTest {
 
     @Test
     void testLoadCsvToDatabase_savesAssetCorrectly() throws Exception {
-        // Create temporary CSV file with 1 valid row
         Path tempCsv = Files.createTempFile("stocks_data", ".csv");
         try (FileWriter writer = new FileWriter(tempCsv.toFile())) {
             writer.write("\"Date\",\"Open\",\"High\",\"Low\",\"Close\",\"Volume\",\"PreviousClose\",\"CompanyName\",\"Symbol\"\n");
@@ -54,7 +53,6 @@ public class CSVDataLoaderServiceTest {
 
         service.loadCsvToDatabase(tempCsv.toString(), stockType);
 
-        // Capture saved Asset
         ArgumentCaptor<Asset> captor = ArgumentCaptor.forClass(Asset.class);
         verify(assetRepository).save(captor.capture());
 
@@ -83,7 +81,6 @@ public class CSVDataLoaderServiceTest {
 
         service.loadCsvToDatabase(tempCsv.toString(), stockType);
 
-        // No save should happen
         verify(assetRepository, never()).save(any(Asset.class));
     }
 

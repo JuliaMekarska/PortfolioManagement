@@ -15,22 +15,20 @@ public class ChatController {
     private final RestTemplate restTemplate = new RestTemplate();
     private final String FASTAPI_URL = "http://127.0.0.1:5049/items";
 
-    private String convId = null; // store one conversation for simplicity
+    private String convId = null;
 
     @PostMapping("/question")
     public Map<String, String> askQuestion(@RequestParam String question) {
         try {
-            // 1️⃣ create conversation if not exists
             if (convId == null) {
                 Map<String, Object> createResp = restTemplate.postForObject(
                         FASTAPI_URL + "/conversations",
-                        null, // no body needed
+                        null,
                         Map.class
                 );
                 convId = (String) createResp.get("conversation_id");
             }
 
-            // 2️⃣ send message
             Map<String, String> messageBody = Map.of("message", question);
             Map<String, Object> answerResp = restTemplate.postForObject(
                     FASTAPI_URL + "/conversations/" + convId + "/message",

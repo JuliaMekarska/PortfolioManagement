@@ -28,7 +28,6 @@ public class UserTransactionController {
                                           @RequestParam String ticker,
                                           @RequestParam BigDecimal amount,
                                           @RequestParam BigDecimal price) {
-        // Kupno zawsze po tickerze, assetId = null
         return transactionService.addTransaction(userId, ticker, amount, price, TransactionType.BUY, null);
     }
 
@@ -37,7 +36,6 @@ public class UserTransactionController {
                                            @RequestParam Long assetId,
                                            @RequestParam BigDecimal amount,
                                            @RequestParam BigDecimal price) {
-        // Sprzedaż po assetId
         return transactionService.addTransaction(userId, null, amount, price, TransactionType.SELL, assetId);
     }
 
