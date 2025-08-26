@@ -7,10 +7,11 @@ async function getJSON(url) {
   return res.json();
 }
 
-let plChart;
+let plChart; // referencja do wykresu
 
 async function loadSummary() {
-
+  // Oczekiwany kształt odpowiedzi (przykład):
+  // { balance: 8000, profit: 320, profitPct: 4.2, loss: 120, lossPct: 1.4, currency: "USD" }
   const summary = await getJSON(`${API_BASE}/portfolio/summary`).catch(() => null);
   if (!summary) {
     setText("balanceDisplay", "—");
@@ -35,7 +36,8 @@ async function loadSummary() {
 }
 
 async function loadPortfolio() {
-
+  // Oczekiwany kształt odpowiedzi (przykład):
+  // [ { ticker, name, close, percentChange, volume, marketType:{name} } ]
   const assets = await getJSON(`${API_BASE}/portfolio/assets`).catch(() => []);
   const tbody = document.getElementById("portfolioBody");
   tbody.innerHTML = "";
@@ -62,7 +64,7 @@ async function loadPortfolio() {
 }
 
 async function loadTransactions() {
-
+  // Oczekiwany kształt odpowiedzi (przykład):
   // [ { time, action: "ADD"|"REMOVE", ticker, name, quantity, price } ]
   const tx = await getJSON(`${API_BASE}/portfolio/transactions`).catch(() => []);
   const tbody = document.getElementById("transactionsBody");
@@ -90,7 +92,7 @@ async function loadTransactions() {
   });
 }
 
-
+/* ---------- Render wykresu Profit/Loss ---------- */
 function renderPLChart(profit, lossAbs) {
   const ctx = document.getElementById("plChart").getContext("2d");
 
@@ -122,7 +124,7 @@ function renderPLChart(profit, lossAbs) {
   });
 }
 
-
+/* ---------- Zakładki ---------- */
 function setupTabs() {
   const portfolioBtn = document.getElementById("tabPortfolioBtn");
   const txBtn = document.getElementById("tabTxBtn");
@@ -139,7 +141,7 @@ function setupTabs() {
   });
 }
 
-
+/* ---------- Utils ---------- */
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
@@ -166,7 +168,7 @@ function safe(s) {
   return String(s);
 }
 function formatTime(t) {
-
+  // próba formatowania ISO -> lokalny
   try {
     return new Date(t).toLocaleString();
   } catch { return t; }
@@ -177,4 +179,7 @@ function formatTime(t) {
   setupTabs();
   await Promise.all([loadSummary(), loadPortfolio(), loadTransactions()]).catch(console.error);
 
+  // Jeżeli chcesz odświeżanie na bieżąco:
+  // setInterval(() => { loadSummary(); loadPortfolio(); loadTransactions(); }, 30000);
 })();
+

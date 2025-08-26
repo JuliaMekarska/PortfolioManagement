@@ -48,25 +48,25 @@
 </header>
 
 <!-- Karty/metryki -->
+<!-- Karty/metryki -->
+<!-- Karty/metryki -->
 <section class="summary">
     <div class="card">
         <h3 style="margin:0 0 6px;">Balance</h3>
         <div id="balanceValue">—</div>
     </div>
-    <div class="card">
-        <h3 style="margin:0 0 6px;">Profit</h3>
-        <div id="profitValue">—</div>
-        <div id="profitPct" style="color:#2e7d32;">—</div>
+
+    <div class="card" id="plCard" style="position: relative;">
+        <h3 style="margin:0 0 6px;">P/L</h3>
+        <div id="plValue" style="font-weight:bold; font-size: 1.2em;">—</div>
+        <div id="plPct" style="font-size:0.9em;">—</div>
+        <!-- Opcjonalny pasek wizualny -->
+        <div id="plBar" style="height:6px; background:#ccc; border-radius:3px; margin-top:6px;">
+            <div id="plFill" style="height:100%; width:0%; background:green; border-radius:3px;"></div>
+        </div>
     </div>
-    <div class="card">
-        <h3 style="margin:0 0 6px;">Loss</h3>
-        <div id="lossValue">—</div>
-        <div id="lossPct" style="color:#c62828;">—</div>
-    </div>
-    <div class="card">
-        <h3 style="margin:0 0 6px;">P/L Chart</h3>
-        <canvas id="plChart" height="140"></canvas>
-    </div>
+</section>
+
 </section>
 
 <!-- Zakładki -->
@@ -82,9 +82,11 @@
         <tr>
             <th>Ticker</th>
             <th>Name</th>
-            <th>Close</th>
-            <th>% Change</th>
-            <th>Volume</th>
+            <th>Date</th>
+            <th>Buy Prize</th>
+            <th>Current Prize</th>
+            <th>Amount</th>
+            <th>ROI</th>
             <th>Market</th>
         </tr>
         </thead>
@@ -97,12 +99,14 @@
     <table>
         <thead>
         <tr>
-            <th>Time</th>
-            <th>Action</th>
             <th>Ticker</th>
             <th>Name</th>
-            <th>Qty</th>
-            <th>Price</th>
+            <th>Date</th>
+            <th>Buy Prize</th>
+            <th>Current Prize</th>
+            <th>Amount</th>
+            <th>ROI</th>
+            <th>Market</th>
         </tr>
         </thead>
         <tbody id="transactionsBody"></tbody>
@@ -112,3 +116,5 @@
 <script src="profile.js"></script>
 </body>
 </html>
+
+
