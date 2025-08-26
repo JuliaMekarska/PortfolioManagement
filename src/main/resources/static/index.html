@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Portfolio Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border-bottom: 1px solid #ccc;
+        }
+        nav .menu-buttons button {
+            margin-right: 10px;
+            padding: 6px 12px;
+        }
+        nav .account-status {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Q2 Portfolio</h1>
+
+    <!-- Menu nawigacyjne -->
+    <nav>
+        <div class="menu-buttons">
+            <button onclick="window.location.href='index.html'">Home</button>
+            <button onclick="window.location.href='profile.html'">Profile</button>
+        </div>
+        <div class="account-status">
+            Balance: $8,000
+        </div>
+    </nav>
+
+    <div class="search-bar">
+        <!-- Search -->
+        <h2>Search assets:</h2>
+        <input type="text" id="search" placeholder="Search assets...">
+
+        <!-- Group by Market -->
+        <h2>Group by Market:</h2>
+        <select id="marketFilter">
+            <option value="ALL">All Markets</option>
+        </select>
+
+        <!-- Sort by -->
+        <h2>Sort by:</h2>
+        <select id="sortBy">
+            <option value="name-asc">Name A → Z</option>
+            <option value="name-desc">Name Z → A</option>
+            <option value="close-asc">Close Low → High</option>
+            <option value="close-desc">Close High → Low</option>
+            <option value="volume-asc">Volume Low → High</option>
+            <option value="volume-desc">Volume High → Low</option>
+        </select>
+    </div>
+</header>
+
+<section class="assets">
+    <h2>Available assets</h2>
+    <div id="assetList"></div>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
