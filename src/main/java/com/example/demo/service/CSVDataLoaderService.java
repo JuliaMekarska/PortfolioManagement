@@ -7,6 +7,9 @@ import com.example.demo.repository.MarketTypeRepository;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -31,13 +34,15 @@ public class CSVDataLoaderService {
         this.assetRepository = assetRepository;
         this.marketTypeRepository = marketTypeRepository;
     }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @PostConstruct
     public void init() {
         try {
-            marketTypeRepository.deleteAll();
+
             // Run Python script once to fetch data
-            File pythonFile = new File("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/python/output/fetch_data.py");
+            File pythonFile = new File("src/main/python/output/fetch_data.py");
             if (!pythonFile.exists()) {
                 System.err.println("Python script not found: " + pythonFile.getAbsolutePath());
             } else {
@@ -54,10 +59,10 @@ public class CSVDataLoaderService {
             commodityType = ensureType("COMMODITY");
 
             // Load CSVs into H2
-            loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/stocks_data.csv", stockType);
-            loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/crypto_data.csv", cryptoType);
-            loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/etf_data.csv", etfType);
-            loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/commodities_data.csv", commodityType);
+            loadCsvToDatabase("src/main/resources/data/stocks_data.csv", stockType);
+            loadCsvToDatabase("src/main/resources/data/crypto_data.csv", cryptoType);
+            loadCsvToDatabase("src/main/resources/data/etf_data.csv", etfType);
+            loadCsvToDatabase("src/main/resources/data/commodities_data.csv", commodityType);
 
         } catch (IOException | InterruptedException | CsvValidationException e) {
             System.err.println("Error running Python script or loading CSVs: " + e.getMessage());
@@ -65,7 +70,8 @@ public class CSVDataLoaderService {
         }
     }
 
-    private MarketType ensureType(String name) {
+
+    public MarketType ensureType(String name) {
         return marketTypeRepository.findByName(name)
                 .orElseGet(() -> marketTypeRepository.save(new MarketType(name)));
     }
@@ -122,7 +128,7 @@ public class CSVDataLoaderService {
         }
     }
 
-    private BigDecimal toBigDecimal(String value) {
+    public BigDecimal toBigDecimal(String value) {
         try {
             return (value != null && !value.isBlank()) ? new BigDecimal(value) : null;
         } catch (Exception e) {

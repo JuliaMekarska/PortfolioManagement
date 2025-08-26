@@ -22,6 +22,26 @@ public class PortfolioAsset {
     @JoinColumn(name = "asset_id")
     private Asset asset;
 
+    private BigDecimal profitAsset;
+
+    public BigDecimal getProfitAsset() {
+        return profitAsset;
+    }
+
+    public void setProfitAsset(BigDecimal profitAsset) {
+        this.profitAsset = profitAsset;
+    }
+
+    private BigDecimal purchasePrice;
+
+    public void setPurchasePrice(BigDecimal purchasePrice) {
+        this.purchasePrice = purchasePrice;
+    }
+
+    public BigDecimal getPurchasePrice() {
+        return purchasePrice;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
