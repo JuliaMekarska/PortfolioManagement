@@ -1,6 +1,10 @@
 const assetsList = document.getElementById('assetsList');
 const marketSelect = document.getElementById('marketType');
 const assetDetailsDiv = document.getElementById('assetDetails');
+const searchInput = document.getElementById('assetSearch');
+
+let allAssets = [];
+let currentMarket = "";
 
 if (marketSelect) {
     fetch('/api/market-types')
@@ -15,80 +19,99 @@ if (marketSelect) {
         });
 }
 
+function renderAssets(assets) {
+    if (!assetsList) return;
+    assetsList.innerHTML = "";
+
+    assets.forEach(asset => {
+        const card = document.createElement('div');
+        card.className = 'asset-card';
+        card.innerHTML = `
+            <h3>${asset.name} (${asset.ticker})</h3>
+            <p>Price: ${asset.closePrice ?? 'N/A'}</p>
+            <button class="detailsBtn" data-ticker="${asset.ticker}">Details</button>
+            <button class="addBtn" data-ticker="${asset.ticker}" data-close="${asset.closePrice ?? 0}">Add</button>
+            <div class="addForm" id="form-${asset.ticker}" style="display:none; margin-top:10px;">
+                <label>Quantity:</label>
+                <input type="number" step="0.01" id="amount-${asset.ticker}" value="1">
+                <br>
+                <label>Price:</label>
+                <input type="number" step="0.01" id="price-${asset.ticker}" value="${asset.closePrice ?? 0}">
+                <br>
+                <button class="confirmAdd" data-ticker="${asset.ticker}">✅ Add to Portfolio</button>
+                <p id="msg-${asset.ticker}" style="color:green;"></p>
+            </div>
+        `;
+        assetsList.appendChild(card);
+    });
+
+    document.querySelectorAll(".detailsBtn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const ticker = e.target.dataset.ticker;
+            window.location.href = `asset-details.html?ticker=${ticker}`;
+        });
+    });
+
+    document.querySelectorAll(".addBtn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const ticker = e.target.dataset.ticker;
+            const formDiv = document.getElementById(`form-${ticker}`);
+            formDiv.style.display = formDiv.style.display === "none" ? "block" : "none";
+        });
+    });
+
+    document.querySelectorAll(".confirmAdd").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const ticker = e.target.dataset.ticker;
+            const amount = document.getElementById(`amount-${ticker}`).value;
+            const price = document.getElementById(`price-${ticker}`).value;
+            const userId = 1;
+
+            fetch(`/api/transactions/buy?userId=${userId}&ticker=${ticker}&amount=${amount}&price=${price}`, {
+                method: "POST"
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Error while adding a new transaction");
+                return res.json();
+            })
+            .then(data => {
+                document.getElementById(`msg-${ticker}`).textContent =
+                    `✅ Added: ${data.amount} assets of ${data.asset.name} sold at ${data.price} each`;
+                document.getElementById(`form-${ticker}`).style.display = "none";
+            })
+            .catch(err => {
+                document.getElementById(`msg-${ticker}`).textContent = `❌ ${err}`;
+                document.getElementById(`msg-${ticker}`).style.color = "red";
+            });
+        });
+    });
+}
+
 function fetchAssets(market = "") {
     let url = '/api/assets';
     if (market) url = `/api/assets/market/${market}`;
+    currentMarket = market;
 
     fetch(url)
         .then(res => res.json())
         .then(assets => {
-            if (assetsList) {
-                assetsList.innerHTML = "";
-                assets.forEach(asset => {
-                    const card = document.createElement('div');
-                    card.className = 'asset-card';
-                    card.innerHTML = `
-                        <h3>${asset.name} (${asset.ticker})</h3>
-                        <p>Price: ${asset.closePrice ?? 'N/A'}</p>
-                        <button class="detailsBtn" data-ticker="${asset.ticker}">Details</button>
-                        <button class="addBtn" data-ticker="${asset.ticker}" data-close="${asset.closePrice ?? 0}">Add</button>
-                        <div class="addForm" id="form-${asset.ticker}" style="display:none; margin-top:10px;">
-                            <label>Quantity:</label>
-                            <input type="number" step="0.01" id="amount-${asset.ticker}" value="1">
-                            <br>
-                            <label>Price:</label>
-                            <input type="number" step="0.01" id="price-${asset.ticker}" value="${asset.closePrice ?? 0}">
-                            <br>
-                            <button class="confirmAdd" data-ticker="${asset.ticker}">✅ Add to Portfolio</button>
-                            <p id="msg-${asset.ticker}" style="color:green;"></p>
-                        </div>
-                    `;
-                    assetsList.appendChild(card);
-                });
-
-
-                document.querySelectorAll(".detailsBtn").forEach(btn => {
-                    btn.addEventListener("click", (e) => {
-                        const ticker = e.target.dataset.ticker;
-                        window.location.href = `asset-details.html?ticker=${ticker}`;
-                    });
-                });
-
-                document.querySelectorAll(".addBtn").forEach(btn => {
-                    btn.addEventListener("click", (e) => {
-                        const ticker = e.target.dataset.ticker;
-                        const formDiv = document.getElementById(`form-${ticker}`);
-                        formDiv.style.display = formDiv.style.display === "none" ? "block" : "none";
-                    });
-                });
-
-                document.querySelectorAll(".confirmAdd").forEach(btn => {
-                    btn.addEventListener("click", (e) => {
-                        const ticker = e.target.dataset.ticker;
-                        const amount = document.getElementById(`amount-${ticker}`).value;
-                        const price = document.getElementById(`price-${ticker}`).value;
-                        const userId = 1;
-
-                        fetch(`/api/transactions/buy?userId=${userId}&ticker=${ticker}&amount=${amount}&price=${price}`, {
-                            method: "POST"
-                        })
-                        .then(res => {
-                            if (!res.ok) throw new Error("Error while adding a new transaction");
-                            return res.json();
-                        })
-                        .then(data => {
-                            document.getElementById(`msg-${ticker}`).textContent =
-                                `✅ Added: ${data.amount} assets of ${data.asset.name} sold at ${data.price} each`;
-                            document.getElementById(`form-${ticker}`).style.display = "none";
-                        })
-                        .catch(err => {
-                            document.getElementById(`msg-${ticker}`).textContent = `❌ ${err}`;
-                            document.getElementById(`msg-${ticker}`).style.color = "red";
-                        });
-                    });
-                });
-            }
+            allAssets = assets;
+            applyFilters();
         });
+}
+
+function applyFilters() {
+    const query = searchInput ? searchInput.value.toLowerCase() : "";
+    let filtered = allAssets;
+
+    if (query) {
+        filtered = filtered.filter(a =>
+            a.name.toLowerCase().includes(query) ||
+            a.ticker.toLowerCase().includes(query)
+        );
+    }
+
+    renderAssets(filtered);
 }
 
 if (marketSelect) {
@@ -96,7 +119,12 @@ if (marketSelect) {
         fetchAssets(e.target.value);
     });
     fetchAssets();
-    renderChart(asset);
+}
+
+if (searchInput) {
+    searchInput.addEventListener("input", () => {
+        applyFilters();
+    });
 }
 
 if (assetDetailsDiv) {
@@ -123,7 +151,8 @@ if (assetDetailsDiv) {
                         <p id="buyMessage" style="color:green;"></p>
                     </div>
                 `;
-                 renderChart(asset);
+                renderChart(asset);
+
                 const buyButton = document.getElementById("buyButton");
                 buyButton.addEventListener("click", () => {
                     const amount = document.getElementById("amount-detail").value;
@@ -151,9 +180,9 @@ if (assetDetailsDiv) {
         assetDetailsDiv.innerHTML = `<p>No ticker provided.</p>`;
     }
 }
+
 async function renderChart(asset) {
     try {
-        // Fetch the CSV file with last 5 closes
         const res = await fetch("/all_assets_last3closes.csv");
         if (!res.ok) throw new Error("Cannot load CSV with closes");
         const text = await res.text();
@@ -161,44 +190,28 @@ async function renderChart(asset) {
         let history = [];
         let foundRow = false;
 
-        // Parse CSV rows
         text.split("\n").slice(1).forEach((row, index) => {
-            if (!row.trim()) return; // skip empty lines
+            if (!row.trim()) return;
             const cols = row.split(",").map(c => c.replace(/"/g, "").trim());
-
-            // Debug log for each row
-            console.log(`Row ${index}:`, cols);
-
             const symbolFromCsv = cols[0];
-            const categoryFromCsv = cols[1];
-            console.log(symbolFromCsv)
-            console.log(asset.ticker)
+
             if (symbolFromCsv === asset.ticker) {
                 foundRow = true;
-                // CSV format: Symbol,Category,Close_1,Close_2,Close_3,Close_4,Close_5
                 const parsed = cols.slice(2, 7).map(v => {
-                                   const n = parseFloat(v);
-                                   return Number.isFinite(n) ? n : null;
-                               });
-                               console.log("Parsed closes (most recent -> oldest):", parsed);
-
-                               // reverse -> oldest -> newest
-                               history = parsed.slice().reverse();
-                console.log("Matched row history:", history);
+                    const n = parseFloat(v);
+                    return Number.isFinite(n) ? n : null;
+                });
+                history = parsed.slice().reverse();
             }
         });
 
-        if (!foundRow || history.length === 0) {
-            console.warn("No chart data found for", asset.ticker, "in category", asset.category);
-            return;
-        }
+        if (!foundRow || history.length === 0) return;
 
         const ctx = document.getElementById("assetChart").getContext("2d");
-
         new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5"], // oldest → newest
+                labels: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5"],
                 datasets: [{
                     label: `${asset.ticker} Closing Prices`,
                     data: history,
@@ -208,12 +221,9 @@ async function renderChart(asset) {
             },
             options: {
                 responsive: true,
-                plugins: {
-                    legend: { display: true }
-                }
+                plugins: { legend: { display: true } }
             }
         });
-
     } catch (err) {
         console.error("Chart error:", err);
     }

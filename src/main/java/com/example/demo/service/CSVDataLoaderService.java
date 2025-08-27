@@ -58,7 +58,7 @@ public class CSVDataLoaderService {
                 ProcessBuilder pb = new ProcessBuilder("python", pythonFile1.getAbsolutePath());
                 pb.inheritIO();
                 Process process = pb.start();
-                process.waitFor(); // wait until CSVs are written
+                process.waitFor();
             }
 
              */

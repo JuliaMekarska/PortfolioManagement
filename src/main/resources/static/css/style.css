@@ -369,3 +369,38 @@ button:hover {
     }
 }
 
+.search {
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.search label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #182848;
+}
+
+#assetSearch {
+    width: 100%;
+    max-width: 400px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid #b4b4b4;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+
+#assetSearch:focus {
+    outline: none;
+    border-color: #4b6cb7;
+    box-shadow: 0 0 8px rgba(75,108,183,0.4);
+    transform: scale(1.02);
+}
+
+#assetSearch::placeholder {
+    color: #999;
+    font-style: italic;
+}
+

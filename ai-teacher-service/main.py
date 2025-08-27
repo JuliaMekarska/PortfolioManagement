@@ -1,5 +1,3 @@
-# service.py
-
 import os
 import uuid
 import logging
@@ -14,24 +12,12 @@ from langchain.llms.base import LLM
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferWindowMemory
 
-
-# ——————————————————————————————————————————————————————————————————————————————
-# Logging
-# ——————————————————————————————————————————————————————————————————————————————
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("uvicorn.error")
 
-
-# ——————————————————————————————————————————————————————————————————————————————
-# FastAPI + Router
-# ——————————————————————————————————————————————————————————————————————————————
 app = FastAPI(title="AI Finance Teacher (LangChain wrapper)")
 router = APIRouter(prefix="/items", tags=["items"])
 
-
-# ——————————————————————————————————————————————————————————————————————————————
-# HF Token & InferenceClient
-# ——————————————————————————————————————————————————————————————————————————————
 HF_TOKEN = os.getenv("HF_TOKEN")
 if not HF_TOKEN:
     raise RuntimeError("Missing HF_TOKEN environment variable. Set it to your Hugging Face token.")
@@ -39,16 +25,8 @@ if not HF_TOKEN:
 hf_client = InferenceClient(provider="cohere", api_key=HF_TOKEN)
 DEFAULT_MODEL = "CohereLabs/c4ai-command-r-plus"
 
-
-# ——————————————————————————————————————————————————————————————————————————————
-# In‐memory conversation store
-# ——————————————————————————————————————————————————————————————————————————————
 CONVERSATIONS: Dict[str, ConversationChain] = {}
 
-
-# ——————————————————————————————————————————————————————————————————————————————
-# Pydantic Models
-# ——————————————————————————————————————————————————————————————————————————————
 class CreateResponse(BaseModel):
     conversation_id: str
 
@@ -60,20 +38,14 @@ class MessageResponse(BaseModel):
     conversation_id: str
 
 
-# ——————————————————————————————————————————————————————————————————————————————
-# LangChain LLM wrapper for Cohere via HF InferenceClient
-# ——————————————————————————————————————————————————————————————————————————————
 class CohereHFChat(LLM):
-    # 1) Declare pydantic fields so validation passes
     client: InferenceClient
     model: str = DEFAULT_MODEL
     max_new_tokens: int = 120
 
     class Config:
-        # allow our HF client (non-pydantic type) to sit in a field
         arbitrary_types_allowed = True
 
-    # 2) No need for a custom __init__; pydantic will handle client/model/max_new_tokens for us
 
     def _call(self, prompt: str, stop: List[str] | None = None) -> str:
         messages = [
@@ -92,7 +64,6 @@ class CohereHFChat(LLM):
 
     @property
     def _identifying_params(self) -> dict:
-        # Now this is an attribute, not a method
         return {
             "model": self.model,
             "max_new_tokens": self.max_new_tokens,
@@ -102,10 +73,6 @@ class CohereHFChat(LLM):
     def _llm_type(self) -> str:
         return "cohere_hf_chat"
 
-
-# ——————————————————————————————————————————————————————————————————————————————
-# /items endpoints
-# ——————————————————————————————————————————————————————————————————————————————
 @router.get("/hello")
 async def hello():
     logger.info("GET /items/hello")
@@ -159,10 +126,6 @@ def get_history(conv_id: str):
     msgs = [{"role": m.role, "content": m.content} for m in conv.memory.chat_memory.messages]
     return {"history": msgs}
 
-
-# ——————————————————————————————————————————————————————————————————————————————
-# Mount router & uvicorn entrypoint
-# ——————————————————————————————————————————————————————————————————————————————
 app.include_router(router)
 
 if __name__ == "__main__":

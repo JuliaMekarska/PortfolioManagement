@@ -20,14 +20,14 @@ for category, in_file in categories.items():
         if data.empty:
             continue
 
-        closes = data["Close"].tail(5).tolist()  # last 3 closes
+        closes = data["Close"].tail(5).tolist()
         while len(closes) < 5:
             closes.insert(0, None)
 
         all_rows.append({
             "Symbol": symbol,
             "Category": category,
-            "Close_1": closes[-1],  # most recent
+            "Close_1": closes[-1],
             "Close_2": closes[-2],
             "Close_3": closes[-3],
             "Close_4": closes[-4],
