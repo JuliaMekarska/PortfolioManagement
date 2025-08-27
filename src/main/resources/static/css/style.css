@@ -12,6 +12,7 @@ body {
 }
 
 header {
+    position: relative;
     background: linear-gradient(90deg, #4b6cb7, #182848);
     color: #fff;
     padding: 25px 0;
@@ -402,5 +403,22 @@ button:hover {
 #assetSearch::placeholder {
     color: #999;
     font-style: italic;
+}
+
+
+header .logo {
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 150px;
+    width: auto;
+}
+
+header .header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
