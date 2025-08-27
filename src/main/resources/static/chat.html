@@ -15,13 +15,19 @@
         <a href="portfolio.html">Portfolio</a>
     </nav>
 </header>
-<div id="chat"></div>
 
-<input type="text" id="question" placeholder="Type your question" />
-<button onclick="sendQuestion()">Ask</button>
+<div class="chat-wrapper">
+    <div id="chat"></div>
+
+    <div class="chat-input">
+        <input type="text" id="question" placeholder="Type your question" />
+        <button onclick="sendQuestion()">Ask</button>
+    </div>
+</div>
 
 <script>
     const chatDiv = document.getElementById("chat");
+    const questionInput = document.getElementById("question");
 
     function addMessage(role, text) {
         const div = document.createElement("div");
@@ -31,30 +37,63 @@
         chatDiv.scrollTop = chatDiv.scrollHeight; // auto scroll
     }
 
-    async function sendQuestion() {
-    const question = document.getElementById("question").value;
-    if (!question) return;
+    function extractContent(raw) {
+        if (raw == null) return "";
 
-    addMessage("user", question);
-    document.getElementById("question").value = "";
+        if (typeof raw === "object") {
+            if (raw.content) return String(raw.content);
+            if (raw.message && raw.message.content) return String(raw.message.content);
 
-    try {
-        const resp = await fetch("/api/chat/question?question=" + encodeURIComponent(question), {
-            method: "POST"
-        });
-        const data = await resp.json();
+            if (Array.isArray(raw.choices) && raw.choices.length) {
+                const c0 = raw.choices[0];
+                if (c0 && c0.message && c0.message.content) return String(c0.message.content);
+                if (c0 && c0.delta && c0.delta.content) return String(c0.delta.content);
+            }
+            try { return JSON.stringify(raw); } catch { return String(raw); }
+        }
 
-        // extract only content
-        let answer = data.answer;
-        const match = answer.match(/content='([\s\S]*?)'/);
-        if (match) answer = match[1];
+        if (typeof raw === "string") {
+            const s = raw.trim();
 
-        addMessage("assistant", answer || "No answer received");
-    } catch (err) {
-        addMessage("assistant", "Error: " + err.message);
+            if (s.startsWith("{") || s.startsWith("[")) {
+                try {
+                    const obj = JSON.parse(s);
+                    return extractContent(obj);
+                } catch { /* nie JSON */ }
+            }
+
+            const m = s.match(/content=(["'])([\s\S]*?)\1/);
+            if (m) return m[2];
+
+            return s;
+        }
+
+        return String(raw);
     }
-}
 
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question) return;
+
+        addMessage("user", question);
+        questionInput.value = "";
+
+        try {
+            const resp = await fetch("/api/chat/question?question=" + encodeURIComponent(question), {
+                method: "POST"
+            });
+            const data = await resp.json();
+
+            const answer = extractContent(data && data.answer);
+            addMessage("assistant", answer || "No answer received");
+        } catch (err) {
+            addMessage("assistant", "Error: " + err.message);
+        }
+    }
+
+    questionInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") sendQuestion();
+    });
 </script>
 
 </body>

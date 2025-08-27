@@ -255,8 +255,33 @@ body.chat {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 20px;
+    padding: 0;
 }
+
+body.chat header {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.chat-input {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#question {
+    margin-bottom: 12px;
+}
+
+button {
+    padding: 8px 18px;
+    font-size: 0.9rem;
+}
+
+a {
+    color: white;
+}
+
 
 body.chat h1 {
     font-size: 2rem;
