@@ -40,7 +40,7 @@ public class CSVDataLoaderService {
     @PostConstruct
     public void init() {
         try {
-
+/*
             File pythonFile = new File("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/python/output/fetch_data.py");
             if (!pythonFile.exists()) {
                 System.err.println("Python script not found: " + pythonFile.getAbsolutePath());
@@ -51,17 +51,28 @@ public class CSVDataLoaderService {
                 process.waitFor();
             }
 
+            File pythonFile1 = new File("src/main/python/output/historic_data.py");
+            if (!pythonFile.exists()) {
+                System.err.println("Python script not found: " + pythonFile1.getAbsolutePath());
+            } else {
+                ProcessBuilder pb = new ProcessBuilder("python", pythonFile1.getAbsolutePath());
+                pb.inheritIO();
+                Process process = pb.start();
+                process.waitFor(); // wait until CSVs are written
+            }
+
+             */
+
             stockType = ensureType("STOCK");
             cryptoType = ensureType("CRYPTO");
             etfType = ensureType("ETF");
             commodityType = ensureType("COMMODITY");
-
             loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/stocks_data.csv", stockType);
             loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/crypto_data.csv", cryptoType);
             loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/etf_data.csv", etfType);
             loadCsvToDatabase("C:/Users/Administrator/Desktop/PortfolioManagement/PortfolioManagement/src/main/resources/data/commodities_data.csv", commodityType);
 
-        } catch (IOException | InterruptedException | CsvValidationException e) {
+        } catch (IOException | CsvValidationException e) {
             System.err.println("Error running Python script or loading CSVs: " + e.getMessage());
             e.printStackTrace();
         }

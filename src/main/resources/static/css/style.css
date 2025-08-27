@@ -278,14 +278,9 @@ button {
     font-size: 0.9rem;
 }
 
-a {
-    color: white;
-}
-
-
 body.chat h1 {
     font-size: 2rem;
-    color: #182848;
+    color: #ffffff;
     margin-bottom: 30px;
     text-align: center;
 }
