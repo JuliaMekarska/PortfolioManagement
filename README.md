@@ -1,6 +1,7 @@
 Hi!
 
 Thank you for taking the time to review our code! We hope you enjoy the application – our whole team dedicated a lot of effort to make it work well.
+Final version of the project is on julss-3-final branch
 
 JAM Team
 
